@@ -1,7 +1,7 @@
 % This script test under 10-fold Cross Validation, divided by ID, how dtfv works
 % Using MFCC feature
 function prob = test_MFCC(part, method)
-run('../../../toolbox/vlfeat-0.9.20/toolbox/vl_setup')
+run('vlfeat-0.9.21/toolbox/vl_setup')
 addpath('../../../toolbox/libsvm/matlab');
 %part = 1;
 trainfile = ['../Scripts_by_ID/trainVideo',num2str(part),'.txt'];
