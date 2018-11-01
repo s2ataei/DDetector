@@ -1,7 +1,5 @@
 function audioFeature = PSTC(inputVideo) 
-
-% Read video file
-[inputAudio,Fs] = audioread(inputVideo)
+%Computes PSTC audio feature
 
 % compute spectrogram
 audioFeature = spectrogram(inputAudio(:,2)) 
