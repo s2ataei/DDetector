@@ -1,28 +1,29 @@
 function [prob] = test_audio(part, method)
 
-run('vlfeat-0.9.21/toolbox/vl_setup')
+run([pwd, '/vlfeat/toolbox/vl_setup'])
 
-trainVideoDir = '/';
+trainVideoDir = '/Users/joshuaseguin/Desktop/';
 testVideoDir = '/';
 
 %% Get features
 
 %Feature extract using METHOD instead of MFCC 
-[audio_feat] = audio_feat_extract(trainVideoDir)
+[audio_feat] = audio_feat_extract(trainVideoDir);
 
 %Need features plus gmm of features (means, cov, priors) and then fisher
 %still have not run vl_gmm or vl_fisher yet
 
 
 %TRAINING DATA and LABELS
-
-tmpdata = audio_feat;
-tmpdata = tmpdata(:, sum(isnan(tmpdata),1)==0); %idk why
-[means, covariances, priors] = vl_gmm(tmpdata, numClusters);
-encoding = vl_fisher(tmpdata, means, covariances, priors);
-train_fea(i,:) = encoding';
-train_lab(i) = lab;             %need a solution for labels !!!!!
-
+numClusters = 64; %idk why
+for i = 1:length(audio_feat);
+    tmpdata = audio_feat{1,i};
+    tmpdata = tmpdata(:, sum(isnan(tmpdata),1)==0); %idk why
+    [means, covariances, priors] = vl_gmm(tmpdata', numClusters);
+    encoding = vl_fisher(tmpdata', means, covariances, priors');
+    train_fea(i,:) = encoding';
+%     train_lab(i) = lab;             %need a solution for labels !!!!!
+end
 
 %% Test Phase -  use any model already made ie 'NN' etc. with train_fea & train_lab
 

@@ -15,7 +15,7 @@ database = {file.name}; %cell of file names
         audioDFT = fft(inputAudio(:,1));
 
         %Calculate PCC
-        pccFeature(:,i) = dct(log(abs(audioDFT)));
+        pccFeature{1,i} = dct(log(abs(audioDFT)));
 
         %Calculate PSC
 %         pscFeature(:,i) = dct(abs(audioDFT));
