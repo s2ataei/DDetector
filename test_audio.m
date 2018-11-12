@@ -1,8 +1,9 @@
-function [prob] = test_audio(part, method)
+function [prob] = test_audio(method)
 
+% removed PART argument because unused
 run([pwd, '/vlfeat/toolbox/vl_setup'])
 
-trainVideoDir = '/Users/joshuaseguin/Desktop/';
+trainVideoDir = '../Video_chunks';
 testVideoDir = '/';
 
 %% Get features
@@ -12,6 +13,7 @@ testVideoDir = '/';
 
 %Need features plus gmm of features (means, cov, priors) and then fisher
 %still have not run vl_gmm or vl_fisher yet
+lab = label_extract('Labels.xlsx');
 
 
 %TRAINING DATA and LABELS
