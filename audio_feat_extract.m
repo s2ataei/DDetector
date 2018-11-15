@@ -7,7 +7,7 @@
 file = dir([videoDir,'*.mp4']); %struct 
 database = {file.name}; %cell of file names
 
-    for (i=1:numel(database))
+    for i=1:numel(database)
         % Read video file
         [inputAudio,Fs] = audioread([videoDir, database{i}]);
         

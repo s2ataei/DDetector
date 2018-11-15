@@ -3,28 +3,39 @@ function [prob] = test_audio(method)
 % removed PART argument because unused
 run([pwd, '/vlfeat/toolbox/vl_setup'])
 
-trainVideoDir = '../Video_chunks';
+trainVideoDir = 'G:\My Drive\MASc\Multimedia\Project\DARE-master\Video_chunks\';
 testVideoDir = '/';
 
 %% Get features
 
 %Feature extract using METHOD instead of MFCC 
-[audio_feat] = audio_feat_extract(trainVideoDir);
+% extracted features are previously saved in a .mat file in a folder called
+% newfeatures, otherwise, perform feature extraction which takes a long
+% time
+featureFolder = '../newfeatures/';
+if exist([featureFolder 'pccFeat.mat'])
+    load([featureFolder 'pccFeat.mat']);
+    [audio_feat] = pccFeat;
+else
+    [audio_feat] = audio_feat_extract(trainVideoDir);
+end
 
 %Need features plus gmm of features (means, cov, priors) and then fisher
 %still have not run vl_gmm or vl_fisher yet
-lab = label_extract('Labels.xlsx');
+lab = label_extract('Labels.xlsx',trainVideoDir);
 
 
 %TRAINING DATA and LABELS
 numClusters = 64; %idk why
-for i = 1:length(audio_feat);
+for i = 1:length(audio_feat)
+    X = sprintf('Encoding feature %d',i);       % added a counter to see the progress
+    disp(X);
     tmpdata = audio_feat{1,i};
     tmpdata = tmpdata(:, sum(isnan(tmpdata),1)==0); %idk why
     [means, covariances, priors] = vl_gmm(tmpdata', numClusters);
     encoding = vl_fisher(tmpdata', means, covariances, priors');
     train_fea(i,:) = encoding';
-%     train_lab(i) = lab;             %need a solution for labels !!!!!
+    train_lab(i) = lab(i);             
 end
 
 %% Test Phase -  use any model already made ie 'NN' etc. with train_fea & train_lab
@@ -32,14 +43,18 @@ end
 % THIS IS ALL THE SAME AS TEST_MFCC FROM HERE DOWN (mostly)
 
 % TESTING DATA and LABELS
-[audio_feat_test] = audio_feat_extract(testVideoDir)
-test_data = audio_feat_test;
-test_data = test_data(:, sum(isnan(test_data),1)==0); %idk why
-[means, covariances, priors] = vl_gmm(test_data, numClusters);
-encoding = vl_fisher(test_data, means, covariances, priors);
-test_fea(i,:) = encoding';
-test_lab(i) = lab; % don tknow what to do for lab yet
+% [audio_feat_test] = audio_feat_extract(testVideoDir) % changed this to
+% use features that are already extracted, testing on first 5 chunks
+[audio_feat_test] = audio_feat{1,1:2};
 
+for i = 1:length(audio_feat_test)
+    test_data = audio_feat_test{1,i};
+    test_data = test_data(:, sum(isnan(test_data),1)==0); %idk why
+    [means, covariances, priors] = vl_gmm(test_data', numClusters);
+    encoding = vl_fisher(test_data', means, covariances, priors');
+    test_fea(i,:) = encoding';
+    test_lab(i) = lab(i); 
+end
 switch(method)
 case 'NN'
     net = feedforwardnet(10);
